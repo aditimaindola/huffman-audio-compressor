@@ -17,32 +17,50 @@ const AudioInput: React.FC<AudioInputProps> = ({ onAudioProcessed, isProcessing 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file && file.type.startsWith('audio/')) {
+      console.log('Audio file selected:', file.name, file.size);
       setSelectedFile(file);
       processAudioFile(file);
+    } else {
+      console.log('Invalid file type selected');
     }
   };
 
   const processAudioFile = async (file: File) => {
     try {
+      console.log('Starting audio file processing...');
       const arrayBuffer = await file.arrayBuffer();
+      console.log('Audio file loaded, size:', arrayBuffer.byteLength);
+      
       const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
       const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+      console.log('Audio decoded, duration:', audioBuffer.duration, 'channels:', audioBuffer.numberOfChannels);
       
       // Get audio data from the first channel
       const channelData = audioBuffer.getChannelData(0);
+      console.log('Channel data length:', channelData.length);
       
       // Sample the audio data (take every nth sample to reduce size)
-      const sampleRate = Math.floor(channelData.length / 1000); // Limit to ~1000 samples
+      const targetSamples = Math.min(1000, channelData.length); // Limit to 1000 samples
+      const sampleRate = Math.max(1, Math.floor(channelData.length / targetSamples));
       const sampledData: number[] = [];
       
       for (let i = 0; i < channelData.length; i += sampleRate) {
         sampledData.push(channelData[i]);
       }
       
+      console.log('Sampled data length:', sampledData.length);
       setAudioData(sampledData);
       
       // Convert audio samples to text representation for Huffman coding
       const textRepresentation = convertAudioToText(sampledData);
+      console.log('Text representation length:', textRepresentation.length);
+      console.log('Text sample:', textRepresentation.substring(0, 50));
+      
+      if (textRepresentation.length === 0) {
+        console.error('No text generated from audio');
+        return;
+      }
+      
       onAudioProcessed(textRepresentation);
       
     } catch (error) {
@@ -51,16 +69,24 @@ const AudioInput: React.FC<AudioInputProps> = ({ onAudioProcessed, isProcessing 
   };
 
   const convertAudioToText = (samples: number[]): string => {
+    if (samples.length === 0) {
+      console.log('No samples to convert');
+      return '';
+    }
+    
     // Quantize audio samples into discrete levels and map to characters
     const levels = 8; // Use 8 levels for simplicity
     const chars = 'abcdefgh'; // Map each level to a character
     
-    return samples.map(sample => {
+    const result = samples.map(sample => {
       // Normalize sample from [-1, 1] to [0, levels-1]
       const normalizedSample = Math.max(0, Math.min(1, (sample + 1) / 2));
       const level = Math.floor(normalizedSample * (levels - 1));
       return chars[level];
     }).join('');
+    
+    console.log('Audio converted to text, unique characters:', new Set(result).size);
+    return result;
   };
 
   const triggerFileInput = () => {

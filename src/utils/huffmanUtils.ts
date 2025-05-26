@@ -8,7 +8,24 @@ export interface HuffmanNode {
 }
 
 export function buildHuffmanTree(frequencyData: Array<{symbol: string, frequency: number}>): HuffmanNode | null {
-  if (frequencyData.length === 0) return null;
+  console.log('Building Huffman tree with frequency data:', frequencyData);
+  
+  if (frequencyData.length === 0) {
+    console.log('No frequency data provided');
+    return null;
+  }
+  
+  // Handle single character case
+  if (frequencyData.length === 1) {
+    console.log('Single character case, creating simple tree');
+    return {
+      symbol: frequencyData[0].symbol,
+      frequency: frequencyData[0].frequency,
+      left: null,
+      right: null,
+      id: 'single-node'
+    };
+  }
   
   // Create leaf nodes
   const nodes: HuffmanNode[] = frequencyData.map((item, index) => ({
@@ -27,8 +44,14 @@ export function buildHuffmanTree(frequencyData: Array<{symbol: string, frequency
     nodes.sort((a, b) => a.frequency - b.frequency);
     
     // Take two nodes with lowest frequency
-    const left = nodes.shift()!;
-    const right = nodes.shift()!;
+    const left = nodes.shift();
+    const right = nodes.shift();
+    
+    // Safety check
+    if (!left || !right) {
+      console.error('Error: Could not get nodes for merging');
+      break;
+    }
     
     // Create internal node
     const merged: HuffmanNode = {
@@ -42,18 +65,28 @@ export function buildHuffmanTree(frequencyData: Array<{symbol: string, frequency
     nodes.push(merged);
   }
   
-  return nodes[0];
+  console.log('Huffman tree built successfully');
+  return nodes[0] || null;
 }
 
 export function generateHuffmanCodes(root: HuffmanNode | null): {[key: string]: string} {
-  if (!root) return {};
+  if (!root) {
+    console.log('No root node provided for code generation');
+    return {};
+  }
   
   const codes: {[key: string]: string} = {};
+  
+  // Handle single node case
+  if (root.symbol !== null && !root.left && !root.right) {
+    codes[root.symbol] = '0';
+    return codes;
+  }
   
   function traverse(node: HuffmanNode, code: string) {
     if (node.symbol !== null) {
       // Leaf node
-      codes[node.symbol] = code || '0'; // Handle single character case
+      codes[node.symbol] = code || '0';
     } else {
       // Internal node
       if (node.left) traverse(node.left, code + '0');
@@ -62,6 +95,7 @@ export function generateHuffmanCodes(root: HuffmanNode | null): {[key: string]: 
   }
   
   traverse(root, '');
+  console.log('Generated Huffman codes:', codes);
   return codes;
 }
 
