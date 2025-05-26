@@ -11,11 +11,13 @@ import AudioPlayback from '@/components/AudioPlayback';
 import CompressionStats from '@/components/CompressionStats';
 import CodebookDisplay from '@/components/CodebookDisplay';
 import QuizMode from '@/components/QuizMode';
+import AudioInput from '@/components/AudioInput';
 import { buildHuffmanTree, generateHuffmanCodes, encodeMessage, decodeMessage } from '@/utils/huffmanUtils';
-import { Play, Pause, RotateCcw, Volume2 } from 'lucide-react';
+import { Play, Pause, RotateCcw, Volume2, Type, Music } from 'lucide-react';
 
 const Index = () => {
   const [inputText, setInputText] = useState("hello world");
+  const [inputMode, setInputMode] = useState<'text' | 'audio'>('text');
   const [frequencyData, setFrequencyData] = useState<Array<{symbol: string, frequency: number}>>([]);
   const [huffmanTree, setHuffmanTree] = useState<any>(null);
   const [huffmanCodes, setHuffmanCodes] = useState<{[key: string]: string}>({});
@@ -88,6 +90,10 @@ const Index = () => {
     setIsPlaying(!isPlaying);
   };
 
+  const handleAudioProcessed = (audioText: string) => {
+    setInputText(audioText);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 p-6">
       <div className="max-w-7xl mx-auto space-y-6">
@@ -101,37 +107,77 @@ const Index = () => {
           </p>
         </div>
 
-        {/* Input Section */}
+        {/* Input Mode Selection */}
         <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-xl">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Volume2 className="w-5 h-5" />
-              Audio Input Simulation
-            </CardTitle>
+            <CardTitle>Input Source</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex gap-4">
-              <Input
-                placeholder="Enter text to simulate audio stream (e.g., 'hello world')"
-                value={inputText}
-                onChange={(e) => setInputText(e.target.value)}
-                className="flex-1"
-              />
-              <Button 
-                onClick={processInput} 
-                disabled={isProcessing || !inputText.trim()}
-                className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600"
+          <CardContent>
+            <div className="flex gap-4 mb-6">
+              <Button
+                variant={inputMode === 'text' ? 'default' : 'outline'}
+                onClick={() => setInputMode('text')}
+                className="flex items-center gap-2"
               >
-                {isProcessing ? "Processing..." : "Analyze & Compress"}
+                <Type className="w-4 h-4" />
+                Text Input
               </Button>
-              <Button variant="outline" onClick={resetDemo}>
-                <RotateCcw className="w-4 h-4 mr-2" />
-                Reset
+              <Button
+                variant={inputMode === 'audio' ? 'default' : 'outline'}
+                onClick={() => setInputMode('audio')}
+                className="flex items-center gap-2"
+              >
+                <Music className="w-4 h-4" />
+                Audio File
               </Button>
             </div>
+
+            {inputMode === 'text' ? (
+              <div className="space-y-4">
+                <div className="flex gap-4">
+                  <Input
+                    placeholder="Enter text to simulate audio stream (e.g., 'hello world')"
+                    value={inputText}
+                    onChange={(e) => setInputText(e.target.value)}
+                    className="flex-1"
+                  />
+                  <Button 
+                    onClick={processInput} 
+                    disabled={isProcessing || !inputText.trim()}
+                    className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600"
+                  >
+                    {isProcessing ? "Processing..." : "Analyze & Compress"}
+                  </Button>
+                  <Button variant="outline" onClick={resetDemo}>
+                    <RotateCcw className="w-4 h-4 mr-2" />
+                    Reset
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <AudioInput 
+                  onAudioProcessed={handleAudioProcessed}
+                  isProcessing={isProcessing}
+                />
+                <div className="flex gap-4">
+                  <Button 
+                    onClick={processInput} 
+                    disabled={isProcessing || !inputText.trim()}
+                    className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600"
+                  >
+                    {isProcessing ? "Processing..." : "Analyze & Compress"}
+                  </Button>
+                  <Button variant="outline" onClick={resetDemo}>
+                    <RotateCcw className="w-4 h-4 mr-2" />
+                    Reset
+                  </Button>
+                </div>
+              </div>
+            )}
             
             {isProcessing && (
-              <div className="space-y-2">
+              <div className="space-y-2 mt-4">
                 <Progress value={(animationStep / 5) * 100} className="w-full" />
                 <p className="text-sm text-gray-600 text-center">
                   {animationStep === 0 && "Analyzing frequency..."}
@@ -140,6 +186,18 @@ const Index = () => {
                   {animationStep === 3 && "Encoding message..."}
                   {animationStep === 4 && "Decoding verification..."}
                   {animationStep === 5 && "Complete!"}
+                </p>
+              </div>
+            )}
+
+            {inputText && inputMode === 'audio' && (
+              <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+                <h4 className="font-semibold text-gray-800 mb-2">Processed Audio Data:</h4>
+                <div className="font-mono text-sm bg-white p-3 rounded border max-h-32 overflow-y-auto">
+                  {inputText.substring(0, 200)}{inputText.length > 200 ? '...' : ''}
+                </div>
+                <p className="text-xs text-gray-500 mt-2">
+                  {inputText.length} characters generated from audio samples
                 </p>
               </div>
             )}
