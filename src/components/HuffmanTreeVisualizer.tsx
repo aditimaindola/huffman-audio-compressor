@@ -1,7 +1,10 @@
 
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { HuffmanNode } from '@/utils/huffmanUtils';
+import { Fullscreen } from 'lucide-react';
 
 interface TreeVisualizerProps {
   tree: HuffmanNode | null;
@@ -13,14 +16,15 @@ interface TreeVisualizerProps {
 const HuffmanTreeVisualizer: React.FC<TreeVisualizerProps> = ({ tree, codes, isAnimating, step }) => {
   const [highlightedPath, setHighlightedPath] = useState<string[]>([]);
   const [selectedSymbol, setSelectedSymbol] = useState<string | null>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
-  const renderNode = (node: HuffmanNode | null, x: number, y: number, level: number): JSX.Element[] => {
+  const renderNode = (node: HuffmanNode | null, x: number, y: number, level: number, isFullscreenMode: boolean = false): JSX.Element[] => {
     if (!node) return [];
 
     const elements: JSX.Element[] = [];
-    const nodeRadius = 25;
-    const horizontalSpacing = Math.max(80, 300 / Math.pow(2, level));
-    const verticalSpacing = 80;
+    const nodeRadius = isFullscreenMode ? 30 : 25;
+    const horizontalSpacing = isFullscreenMode ? Math.max(120, 500 / Math.pow(2, level)) : Math.max(80, 300 / Math.pow(2, level));
+    const verticalSpacing = isFullscreenMode ? 100 : 80;
 
     // Node circle
     const isHighlighted = highlightedPath.includes(node.id);
@@ -41,7 +45,7 @@ const HuffmanTreeVisualizer: React.FC<TreeVisualizerProps> = ({ tree, codes, isA
           x={x}
           y={y - 5}
           textAnchor="middle"
-          className="text-white text-sm font-bold pointer-events-none"
+          className={`text-white font-bold pointer-events-none ${isFullscreenMode ? 'text-base' : 'text-sm'}`}
         >
           {node.symbol || ''}
         </text>
@@ -49,16 +53,16 @@ const HuffmanTreeVisualizer: React.FC<TreeVisualizerProps> = ({ tree, codes, isA
           x={x}
           y={y + 10}
           textAnchor="middle"
-          className="text-white text-xs pointer-events-none"
+          className={`text-white pointer-events-none ${isFullscreenMode ? 'text-sm' : 'text-xs'}`}
         >
           {node.frequency}
         </text>
         {isLeaf && selectedSymbol === node.symbol && (
           <text
             x={x}
-            y={y + 40}
+            y={y + (isFullscreenMode ? 50 : 40)}
             textAnchor="middle"
-            className="text-blue-600 text-xs font-bold pointer-events-none"
+            className={`text-blue-600 font-bold pointer-events-none ${isFullscreenMode ? 'text-sm' : 'text-xs'}`}
           >
             {codes[node.symbol!] || ''}
           </text>
@@ -106,14 +110,14 @@ const HuffmanTreeVisualizer: React.FC<TreeVisualizerProps> = ({ tree, codes, isA
           <text
             x={(x + leftX) / 2 - 10}
             y={(y + leftY) / 2}
-            className="text-red-600 text-sm font-bold"
+            className={`text-red-600 font-bold ${isFullscreenMode ? 'text-base' : 'text-sm'}`}
           >
             0
           </text>
         </g>
       );
       
-      elements.push(...renderNode(node.left, leftX, leftY, level + 1));
+      elements.push(...renderNode(node.left, leftX, leftY, level + 1, isFullscreenMode));
     }
 
     if (node.right) {
@@ -135,14 +139,14 @@ const HuffmanTreeVisualizer: React.FC<TreeVisualizerProps> = ({ tree, codes, isA
           <text
             x={(x + rightX) / 2 + 10}
             y={(y + rightY) / 2}
-            className="text-green-600 text-sm font-bold"
+            className={`text-green-600 font-bold ${isFullscreenMode ? 'text-base' : 'text-sm'}`}
           >
             1
           </text>
         </g>
       );
       
-      elements.push(...renderNode(node.right, rightX, rightY, level + 1));
+      elements.push(...renderNode(node.right, rightX, rightY, level + 1, isFullscreenMode));
     }
 
     return elements;
@@ -182,6 +186,24 @@ const HuffmanTreeVisualizer: React.FC<TreeVisualizerProps> = ({ tree, codes, isA
     }
   }, [selectedSymbol, tree]);
 
+  const TreeVisualization = ({ isFullscreenMode = false }: { isFullscreenMode?: boolean }) => {
+    const svgWidth = isFullscreenMode ? Math.max(1200, window.innerWidth - 100) : 800;
+    const svgHeight = isFullscreenMode ? Math.max(800, window.innerHeight - 200) : 400;
+    const centerX = svgWidth / 2;
+    
+    return (
+      <div className="w-full overflow-auto">
+        <svg 
+          width={svgWidth} 
+          height={svgHeight} 
+          className="border rounded-lg bg-gray-50"
+        >
+          {tree && renderNode(tree, centerX, 60, 0, isFullscreenMode)}
+        </svg>
+      </div>
+    );
+  };
+
   if (!tree) {
     return (
       <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-xl">
@@ -202,11 +224,40 @@ const HuffmanTreeVisualizer: React.FC<TreeVisualizerProps> = ({ tree, codes, isA
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           <span>Huffman Tree Visualization</span>
-          {selectedSymbol && (
-            <span className="text-sm text-blue-600">
-              Symbol '{selectedSymbol}' → Code: {codes[selectedSymbol]}
-            </span>
-          )}
+          <div className="flex items-center gap-4">
+            {selectedSymbol && (
+              <span className="text-sm text-blue-600">
+                Symbol '{selectedSymbol}' → Code: {codes[selectedSymbol]}
+              </span>
+            )}
+            <Dialog open={isFullscreen} onOpenChange={setIsFullscreen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm" className="flex items-center gap-2">
+                  <Fullscreen className="w-4 h-4" />
+                  Fullscreen
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-[95vw] max-h-[95vh] w-full h-full">
+                <DialogHeader>
+                  <DialogTitle className="flex items-center justify-between">
+                    <span>Huffman Tree Visualization - Fullscreen</span>
+                    {selectedSymbol && (
+                      <span className="text-sm text-blue-600">
+                        Symbol '{selectedSymbol}' → Code: {codes[selectedSymbol]}
+                      </span>
+                    )}
+                  </DialogTitle>
+                </DialogHeader>
+                <div className="flex-1 overflow-hidden">
+                  <div className="text-sm text-gray-600 mb-4">
+                    Click on leaf nodes (green circles) to highlight encoding paths. 
+                    Red edges = 0, Green edges = 1
+                  </div>
+                  <TreeVisualization isFullscreenMode={true} />
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -214,11 +265,7 @@ const HuffmanTreeVisualizer: React.FC<TreeVisualizerProps> = ({ tree, codes, isA
           Click on leaf nodes (green circles) to highlight encoding paths. 
           Red edges = 0, Green edges = 1
         </div>
-        <div className="w-full overflow-auto">
-          <svg width="800" height="400" className="border rounded-lg bg-gray-50">
-            {renderNode(tree, 400, 50, 0)}
-          </svg>
-        </div>
+        <TreeVisualization />
         
         {step >= 3 && (
           <div className="mt-4 p-4 bg-blue-50 rounded-lg">
