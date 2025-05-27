@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,6 +11,7 @@ import CompressionStats from '@/components/CompressionStats';
 import CodebookDisplay from '@/components/CodebookDisplay';
 import QuizMode from '@/components/QuizMode';
 import AudioInput from '@/components/AudioInput';
+import ConceptsDialog from '@/components/ConceptsDialog';
 import { buildHuffmanTree, generateHuffmanCodes, encodeMessage, decodeMessage } from '@/utils/huffmanUtils';
 import { Play, Pause, RotateCcw, Volume2, Type, Music } from 'lucide-react';
 
@@ -105,6 +105,11 @@ const Index = () => {
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             Interactive visualization of prefix-free coding algorithm for data compression with discrete mathematics concepts
           </p>
+          
+          {/* Add the Key Concepts button */}
+          <div className="flex justify-center">
+            <ConceptsDialog />
+          </div>
         </div>
 
         {/* Input Mode Selection */}
