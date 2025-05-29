@@ -99,12 +99,17 @@ const Index = () => {
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="text-center space-y-4">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-            Audio Compression with Huffman Coding
+          <h1 className="text-6xl font-extrabold font-['Orbitron'] tracking-wider bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent drop-shadow-lg transform hover:scale-105 transition-transform duration-200">
+            HUFF & LEARN
           </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Interactive visualization of prefix-free coding algorithm for data compression with discrete mathematics concepts
-          </p>
+          <div className="space-y-2">
+            <p className="text-xl font-['Quicksand'] text-gray-700 max-w-2xl mx-auto italic">
+              Decode the Magic of Compression
+            </p>
+            <p className="text-lg font-['Quicksand'] text-gray-600 max-w-2xl mx-auto">
+              Audio Compression using Huffman Coding
+            </p>
+          </div>
           
           {/* Add the Key Concepts button */}
           <div className="flex justify-center">
