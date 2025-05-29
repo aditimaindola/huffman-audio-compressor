@@ -1,73 +1,55 @@
-# Welcome to your Lovable project
+Huff & Learn : Decode the Magic of Compression
+Audio Compression with Huffman Coding Visualizer
 
-## Project info
+Student Details
+Name:Aditi Maindola
+USN:4NI23CS008
+Semester:4th Semester
+Branch:Computer Science and Engineering
+College: NIE Mysuru
 
-**URL**: https://lovable.dev/projects/132601bf-e342-4bb9-bfaf-284d17dee38c
+Huff & Learn : Decode the Magic of Compression
+Audio Compression with Huffman Coding Visualizer
 
-## How can I edit this code?
+Description
 
-There are several ways of editing your application.
+This project is a React-based web application that demonstrates the concept of lossless audio compression using Huffman Coding. It allows users to upload an audio file, analyzes the frequency of audio data, generates the Huffman tree, and visualizes the encoding process step-by-step.
 
-**Use Lovable**
+The main objective of the project is to provide a clear visual understanding of how Huffman Coding works in real-time, specifically in the context of compressing audio data.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/132601bf-e342-4bb9-bfaf-284d17dee38c) and start prompting.
+Key Features:
+-Accepts custom text input for compression
+-Analyzes character frequency distribution
+-Dynamically constructs Huffman Tree
+-Step-by-step visualization of encoding process
+-Displays compression statistics (original vs compressed)
+-Visualizes real-time decoding using the Huffman Tree
 
-Changes made via Lovable will be committed automatically to this repo.
+Technologies Used:
+- Frontend: React.js, Tailwind CSS
+- Visualization: p5.js / custom canvas rendering
+- Audio Handling: JavaScript Web Audio API
 
-**Use your preferred IDE**
+  
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+How to Run the Project:
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+Prerequisites
+- Node.js and npm installed on your system
 
-Follow these steps:
+Setup Instructions
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+1. Clone the repository
+   ```bash
+   git clone https://github.com/aditimaindola/audio-compression-visualizer.git
+   cd audio-compression-visualizer
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+2.Install dependencies
+  -npm install
 
-# Step 3: Install the necessary dependencies.
-npm i
+3.Run the app
+  - npm run dev
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
 
-**Edit a file directly in GitHub**
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
 
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/132601bf-e342-4bb9-bfaf-284d17dee38c) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
