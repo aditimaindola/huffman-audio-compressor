@@ -48,6 +48,8 @@ The main objective of the project is to provide a clear visual understanding of 
    git clone https://github.com/aditimaindola/audio-compression-visualizer.git
    cd audio-compression-visualizer
 2. Install dependencies
+   ```bash
    npm install
-3. Run the app
+4. Run the app
+   ```bash
    npm run dev
